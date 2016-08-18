@@ -1272,6 +1272,8 @@ private:
     // the associated value if it finds it.
     bool try_read_from_bucket(const partial_t partial, const key_type &key,
                               mapped_type &val, const Bucket& b) const {
+        // Silence a warning from MSVC about partial being unused if is_simple.
+        (void)partial;
         for (size_t i = 0; i < slot_per_bucket; ++i) {
             if (!b.occupied(i)) {
                 continue;
@@ -1291,6 +1293,8 @@ private:
     // if the key is in the bucket, and false if it isn't.
     bool check_in_bucket(const partial_t partial, const key_type &key,
                          const Bucket& b) const {
+        // Silence a warning from MSVC about partial being unused if is_simple.
+        (void)partial;
         for (size_t i = 0; i < slot_per_bucket; ++i) {
             if (!b.occupied(i)) {
                 continue;
@@ -1324,6 +1328,8 @@ private:
     // the table (duplicate key error) and true otherwise.
     bool try_find_insert_bucket(const partial_t partial, const key_type &key,
                                 const Bucket& b, int& slot) const {
+        // Silence a warning from MSVC about partial being unused if is_simple.
+        (void)partial;
         slot = -1;
         bool found_empty = false;
         for (size_t i = 0; i < slot_per_bucket; ++i) {
@@ -1390,6 +1396,8 @@ private:
     template <typename Updater>
     bool try_update_bucket_fn(const partial_t partial, const key_type &key,
                               Updater fn, Bucket& b) {
+        // Silence a warning from MSVC about partial being unused if is_simple.
+        (void)partial;
         for (size_t i = 0; i < slot_per_bucket; ++i) {
             if (!b.occupied(i)) {
                 continue;
