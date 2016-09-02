@@ -27,4 +27,6 @@ CC="$PTHREAD_CC"
 
 AX_CXX_COMPILE_STDCXX_11([noext],[mandatory])
 
+CXXFLAGS="$CXXFLAGS -Wall -Wextra -Wshadow -pedantic"
+
 AC_OUTPUT
