@@ -1,12 +1,3 @@
-Note to existing users: the iterator implementation has changed significantly
-since we introduced the `locked_table` in [this
-commit](https://github.com/efficient/libcuckoo/commit/2bedb3d0c811cd8b3adb3e78e2d2a28c66ba1d1d).
-Please see the [`locked_table`
-documentation](http://efficient.github.io/libcuckoo/classcuckoohash__map_1_1locked__table.html)
-and [examples
-directory](https://github.com/efficient/libcuckoo/tree/master/examples) for
-information and examples of how to use iterators.
-
 libcuckoo
 =========
 
@@ -35,47 +26,80 @@ This library has been tested on Mac OSX >= 10.8 and Ubuntu >= 12.04.
 
 It compiles with clang++ >= 3.3 and g++ >= 4.7, however we strongly suggest
 using the latest versions of both compilers, as they have greatly improved
-support for atomic operations. Building the library requires the
-autotools. Install them on Ubuntu
+support for atomic operations. Building the library requires CMake version >=
+3.1.0. To install it on Ubuntu
 
-    $ sudo apt-get update && sudo apt-get install build-essential autoconf libtool
+    $ sudo apt-get update && sudo apt-get install cmake
 
 Building
 ==========
 
-    $ autoreconf -fis
-    $ ./configure
-    $ make
+We suggest you build out of source, in a separate `build` directory:
+
+    $ mkdir build
+    $ cd build
+
+There are numerous flags you can pass to `CMake` to set which parts of the
+repository it builds.
+
+`-DCMAKE_INSTALL_PREFIX`
+: set the location where the libcuckoo header files are installed
+
+`-DCMAKE_BUILD_TYPE`
+: enable different types of build flags for different purposes
+
+`-DBUILD_EXAMPLES=1`
+: tell `CMake` to build the `examples` directory
+
+`-DBUILD_TESTS=1`
+: build all tests in the `tests` directory
+
+`-DBUILD_STRESS_TESTS=1`
+: build all tests in the `tests/stress-tests` directory
+
+`-DBUILD_UNIT_TESTS=1`
+: build all tests in the `tests/unit-tests` directory
+
+`-DBUILD_UNIVERSAL_BENCHMARK=1`
+: build the universal benchmark in the `tests/universal-benchmark` directory.
+This benchmark allows you to test a variety of operations in arbitrary
+percentages, with specific keys and values.  Consult the `README` in the
+benchmark directory for more details.
+
+So, if, for example, we want to build all examples and all tests into a local
+installation directory, we'd run the following command from the `build`
+directory.
+
+    $ cmake -DCMAKE_INSTALL_PREFIX=../install -DBUILD_EXAMPLES=1 -DBUILD_TESTS=1 ..
+    $ make all
     $ make install
 
 Usage
 ==========
 
-To build a program with the hash table, include
-`libcuckoo/cuckoohash_map.hh` into your source file. If you want to
-use CityHash, which we recommend, we have provided a wrapper
-compatible with the `std::hash` type around it in the
-`libcuckoo/city_hasher.hh` file. If compiling with CityHash, add the
-`-lcityhash` flag. You must also enable C++11 features on your
-compiler. Compiling the file `examples/count_freq.cc` with g++
-might look like this:
+When compiling your own files with `libcuckoo`, always remember to enable C++11
+features on your compiler. On `g++`, this would be `-std=c++11`, and on
+`clang++`, this would be `-std=c++11 -stdlib=libc++`.
 
-    $ g++ -std=c++11 examples/count_freq.cc -lcityhash
+Once you have installed the header files and the install location has been added
+to your search path, you can include `<libcuckoo/cuckoohash_map.hh>`, and any of
+the other headers you installed, into your source file.
 
-The
-[examples directory](https://github.com/efficient/libcuckoo/tree/master/examples)
-contains some simple demonstrations of some of the basic features of the hash
-table.
+There is also a C wrapper around the table that can be leveraged to use
+`libcuckoo` in a C program. The interface consists of a template header and
+implementation file that can be used to generate instances of the hashtable for
+different key-value types.
+
+See the `examples` directory for a demonstration of all of these features.
 
 Tests
 ==========
 
-The [tests directory](https://github.com/efficient/libcuckoo/tree/master/tests)
-directory contains a number of tests and benchmarks of the hash table, which
-also can serve as useful examples of how to use the table's various features.
-After running `make all`, the entire test suite can be run with the `make check`
-command. This will not run the benchmarks, which must be run individually. The
-test executables, which have the suffix `.out`, can be run individually as well.
+The `tests` directory contains a number of tests and benchmarks of the hash
+table, which also can serve as useful examples of how to use the table's various
+features. Make sure to enable the tests you want to build with the corresponding
+`CMake` flags. The test suite can be run with the `make test` command. The test
+executables can be run individually as well.
 
 Issue Report
 ============
@@ -103,5 +127,5 @@ limitations under the License.
 
 ---------------------------
 
-CityHash (lib/city.h, lib/city.cc) is Copyright (c) Google, Inc. and
-has its own license, as detailed in the source files.
+The third-party libraries have their own licenses, as detailed in their source
+files.
